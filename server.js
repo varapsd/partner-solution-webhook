@@ -66,7 +66,7 @@ app.post("/webhook", async (req, res) => {
 
 app.get("/health", async(req, res) => {
     console.log("health check success");
-    req.send("application running successfully");
+    res.send("application running successfully");
 })
 
 // accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
