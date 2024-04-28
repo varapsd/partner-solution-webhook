@@ -7,15 +7,31 @@
 
 var axios = require("axios");
 var express = require("express");
+const mongoose = require("mongoose");
 require('dotenv').config();
 
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
-const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT } = process.env;
-console.log(WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT)
-app.post("/webhook", async (req, res) => {
+const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT, MONGO_URI } = process.env;
+console.log(WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT, MONGO_URI)
+
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const customFlow = require("./flow/custom-tech-provider");
+const companyDAO = require("./Models/Company");
+const url = MONGO_URI;
+
+mongoose.connect(url);
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Connection error: '));
+db.once('open', function (callback) {
+    console.log('Successfully connected to MongoDB.');
+});
+
+app.post("/webhook1", async (req, res) => {
   // log incoming messages
   console.log("Incoming webhook message:", JSON.stringify(req.body, null, 2));
 
@@ -39,10 +55,7 @@ app.post("/webhook", async (req, res) => {
       data: {
         messaging_product: "whatsapp",
         to: message.from,
-        text: { body: "Echo: " + message.text.body },
-        context: {
-          message_id: message.id, // shows the message as a reply to the original user message
-        },
+        text: { body: "HeHe : " + message.text.body },
       },
     });
 
@@ -62,6 +75,37 @@ app.post("/webhook", async (req, res) => {
   }
 
   res.sendStatus(200);
+});
+
+app.post("/webhook", async (req, res) => {
+
+  try {
+    console.log("Incoming webhook message:", JSON.stringify(req.body, null, 2));
+    const message = req.body.entry?.[0]?.changes[0]?.value?.messages?.[0];
+    const status = req.body.entry?.[0]?.changes[0]?.value?.statuses?.[0];
+    if(message){
+      const business_phone_number_id = req.body.entry?.[0].changes?.[0].value?.metadata?.phone_number_id;
+      var companyFilter = {
+        PhoneNumberId : business_phone_number_id
+      }
+      var cmp = await companyDAO.GetCompany(companyFilter);
+      var _req = {
+        company : cmp.toJSON(),
+        body : req.body
+      };
+      var response = await customFlow.Flow(_req);
+      console.log(response);
+    }
+    else{
+      console.log("status message", status);
+    }
+    res.sendStatus(200);
+
+
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(200);
+  }  
 });
 
 app.get("/health", async(req, res) => {
