@@ -19,9 +19,7 @@ const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT, MONGO_URI } = process.env;
 console.log(WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT, MONGO_URI)
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const customFlow = require("./flow/custom-tech-provider");
-const companyDAO = require("./Models/Company");
+
 const url = MONGO_URI;
 
 mongoose.connect(url);
@@ -31,6 +29,8 @@ db.once('open', function (callback) {
     console.log('Successfully connected to MongoDB.');
 });
 
+const companyDAO = require("./Models/Company");
+const customFlow = require("./flow/custom-tech-provider");
 app.post("/webhook1", async (req, res) => {
   // log incoming messages
   console.log("Incoming webhook message:", JSON.stringify(req.body, null, 2));
