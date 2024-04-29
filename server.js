@@ -28,7 +28,7 @@ db.once('open', function (callback) {
     console.log('Successfully connected to MongoDB.');
 });
 
-const customFlow = require("./flow/custom-tech-provider");
+const customFlow = require("./flow/custom-tech-provider").default;
 const companyDAO = require("./models/company");
 
 app.post("/webhook1", async (req, res) => {
