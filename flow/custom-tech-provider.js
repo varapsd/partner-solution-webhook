@@ -1,5 +1,5 @@
-const botflowDAO = require("../Models/BotFlow");
-const botflowStepDAO = require("../Models/botflowStep");
+const botflowDAO = require("../models/BotFlow");
+const botflowStepDAO = require("../models/botflowStep");
 const commonHelper = require("../helper/common");
 
 
