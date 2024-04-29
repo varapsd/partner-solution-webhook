@@ -18,9 +18,8 @@ app.use(express.urlencoded({extended:true}));
 const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT, MONGO_URI } = process.env;
 console.log(WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT, MONGO_URI)
 
-
-
 const url = MONGO_URI;
+console.log("Current directory:", __dirname);
 
 mongoose.connect(url);
 var db = mongoose.connection;
@@ -29,8 +28,8 @@ db.once('open', function (callback) {
     console.log('Successfully connected to MongoDB.');
 });
 
-const companyDAO = require("./Models/Company");
-const customFlow = require("./flow/custom-tech-provider");
+const companyDAO = require(__dirname + "/Models/Company");
+const customFlow = require(__dirname + "/flow/custom-tech-provider");
 app.post("/webhook1", async (req, res) => {
   // log incoming messages
   console.log("Incoming webhook message:", JSON.stringify(req.body, null, 2));
