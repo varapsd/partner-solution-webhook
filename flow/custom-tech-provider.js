@@ -1,8 +1,9 @@
-const botflowStepDAO = require("../models/botflowStep");
 const commonHelper = require("../helper/common");
+const botflowStepDAO = require("../model/botflowstep");
 
 
-var botflowDAO = require("../models/botflow");
+
+var botflowDAO = require("../model/botflow");
 
 var customFlow = {}
 function sleep(ms) {
