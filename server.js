@@ -29,7 +29,7 @@ db.once('open', function (callback) {
 });
 
 const customFlow = require("./flow/custom-tech-provider");
-const companyDAO = require("./model/Company");
+const companyDAO = require("./model/company");
 
 app.post("/webhook1", async (req, res) => {
   // log incoming messages
