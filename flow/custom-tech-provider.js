@@ -1,7 +1,8 @@
-import { getBotFlow } from "../models/botflow";
-import { getAllbotflowSteps } from "../models/botflowstep";
-import { sendResponseWCAPI } from "../helper/common";
+const botflowStepDAO = require("../models/botflowStep");
+const commonHelper = require("../helper/common");
 
+
+var botflowDAO = require("../models/botflow");
 
 var customFlow = {}
 function sleep(ms) {
@@ -14,14 +15,14 @@ const getStepByPattern = async (pattern, company) => {
             companyId: company.id,
             isActive: true
         };
-        var flow = await getBotFlow(filter);
+        var flow = await botflowDAO.getBotFlow(filter);
         flow = flow.toJSON();
         console.log(flow);
         var flowFilter = {
             flowId: flow.id,
             isActive : true
         }
-        var steps = await getAllbotflowSteps(flowFilter);
+        var steps = await botflowStepDAO.getAllbotflowSteps(flowFilter);
         steps = steps.map( stp => stp.toJSON());
         console.log("steps", steps);
         if (steps) {
@@ -117,7 +118,7 @@ customFlow.Flow = async _req => {
                 stepId: stepId,
                 isActive: true
             };
-            var allSteps = await getAllbotflowSteps(filter);
+            var allSteps = await botflowStepDAO.getAllbotflowSteps(filter);
             allSteps = allSteps.map( stp => stp.toJSON())
             console.log("allSteps", allSteps);
 
@@ -133,7 +134,7 @@ customFlow.Flow = async _req => {
                         step.message = replaceVariables(step.message, req, company);
                         step.message.to = from_phone_number;
                         res.push(
-                            await  sendResponseWCAPI(
+                            await commonHelper.sendResponseWCAPI(
                                 business_phone_number_id,
                                 step.message
                             )
@@ -149,4 +150,4 @@ customFlow.Flow = async _req => {
     }
 }
 
-export default customFlow;
+module.exports = customFlow;
